@@ -4,9 +4,12 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Building2, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Building2, ArrowLeft, Pencil, TrendingUp, Plug } from "lucide-react";
 import { DesempenhoEvolucao } from "@/components/charts/desempenho-evolucao";
 import { GerarRelatorioButton } from "@/components/empresas/gerar-relatorio-button";
+import { DeletarEmpresaButton } from "@/components/empresas/deletar-empresa-button";
+import { GerenciarIntegracoesWrapper } from "@/components/empresas/gerenciar-integracoes-wrapper";
 import { construirSerieDiaria } from "@/lib/desempenho";
 import { formatMoeda, formatNumero, formatData } from "@/lib/formatters";
 
@@ -24,9 +27,7 @@ export default async function EmpresaDetalhesPage({
     .eq("id", id)
     .single();
 
-  if (!empresa) {
-    notFound();
-  }
+  if (!empresa) notFound();
 
   const { data: integracoes } = await supabase
     .from("integracoes_ads")
@@ -49,14 +50,9 @@ export default async function EmpresaDetalhesPage({
     .gte("data", dataInicioEvolucao);
 
   const desempenhoMes = (desempenho ?? []).filter((d) => d.data >= inicioMes);
-
   const engajamentoMes = desempenhoMes.reduce((acc, d) => acc + (d.engajamento ?? 0), 0);
   const gastoMes = desempenhoMes.reduce((acc, d) => acc + Number(d.gasto_ads ?? 0), 0);
-  const seguidoresMes = desempenhoMes.reduce(
-    (acc, d) => acc + (d.seguidores_novos ?? 0),
-    0
-  );
-
+  const seguidoresMes = desempenhoMes.reduce((acc, d) => acc + (d.seguidores_novos ?? 0), 0);
   const serieEvolucao = construirSerieDiaria(desempenho ?? [], 30);
 
   return (
@@ -91,10 +87,25 @@ export default async function EmpresaDetalhesPage({
           </div>
         </div>
 
-        <GerarRelatorioButton empresa={{ id: empresa.id, nome: empresa.nome }} />
+        <div className="flex flex-wrap gap-2">
+          <Link href={`/empresas/${id}/editar`}>
+            <Button variant="outline" size="sm">
+              <Pencil size={14} />
+              Editar
+            </Button>
+          </Link>
+          <Link href={`/empresas/${id}/desempenho/novo`}>
+            <Button variant="outline" size="sm">
+              <TrendingUp size={14} />
+              Lançar desempenho
+            </Button>
+          </Link>
+          <GerarRelatorioButton empresa={{ id: empresa.id, nome: empresa.nome }} />
+          <DeletarEmpresaButton empresaId={id} empresaNome={empresa.nome} />
+        </div>
       </div>
 
-      {/* Cards de métricas */}
+      {/* Métricas do mês */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="pb-2">
@@ -106,7 +117,6 @@ export default async function EmpresaDetalhesPage({
             <p className="text-2xl font-semibold">{formatNumero(engajamentoMes)}</p>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -117,7 +127,6 @@ export default async function EmpresaDetalhesPage({
             <p className="text-2xl font-semibold">{formatMoeda(gastoMes)}</p>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -132,9 +141,14 @@ export default async function EmpresaDetalhesPage({
 
       <DesempenhoEvolucao serie={serieEvolucao} />
 
+      {/* Integrações */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between pb-3">
           <CardTitle className="text-base">Integrações conectadas</CardTitle>
+          <GerenciarIntegracoesWrapper
+            empresaId={id}
+            integracoes={integracoes ?? []}
+          />
         </CardHeader>
         <CardContent>
           {integracoes && integracoes.length > 0 ? (
@@ -145,7 +159,7 @@ export default async function EmpresaDetalhesPage({
                   variant={integracao.status === "ativo" ? "default" : "secondary"}
                   className="capitalize"
                 >
-                  {integracao.provider} · {integracao.status}
+                  {integracao.provider.replace("_", " ")} · {integracao.status}
                 </Badge>
               ))}
             </div>

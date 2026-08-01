@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Building2, Trophy, ChevronLeft } from "lucide-react";
+import { LayoutDashboard, Building2, Trophy, FileText, Settings, ChevronLeft } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -15,6 +15,8 @@ const navItems = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
   { label: "Empresas", href: "/empresas", icon: Building2 },
   { label: "Ranking", href: "/ranking", icon: Trophy },
+  { label: "Relatórios", href: "/relatorios", icon: FileText },
+  { label: "Configurações", href: "/configuracoes", icon: Settings },
 ];
 
 export function Sidebar() {

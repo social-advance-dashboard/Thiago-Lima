@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Building2 } from "lucide-react";
 import { EvolucaoLineChart } from "@/components/charts/evolucao-line-chart";
 import { formatData, formatMoeda, formatMoedaCompacta, formatNumero } from "@/lib/formatters";
+import { BotaoPrint } from "@/components/relatorios/botao-print";
 
 type RelatorioPublico = {
   relatorio: {
@@ -132,9 +133,12 @@ export default async function RelatorioPublicoPage({
           </CardContent>
         </Card>
 
-        <p className="text-center text-xs text-muted-foreground">
-          Relatório gerado pela Social Advance
-        </p>
+        <div className="flex items-center justify-between print:hidden">
+          <p className="text-xs text-muted-foreground">
+            Relatório gerado pela Social Advance
+          </p>
+          <BotaoPrint />
+        </div>
       </div>
     </div>
   );
