@@ -81,6 +81,25 @@ export function EmpresaCard({ empresa }: { empresa: EmpresaComDados }) {
             <span className="text-muted-foreground">Gasto ads (mês)</span>
             <span className="font-medium">{formatMoeda(empresa.gasto)}</span>
           </div>
+          <div className="flex justify-between text-sm pt-2">
+            <span className="text-muted-foreground">Pagamento</span>
+            <Badge
+              variant={
+                empresa.status_pagamento === "em_dia"
+                  ? "default"
+                  : empresa.status_pagamento === "atrasado"
+                  ? "destructive"
+                  : "secondary"
+              }
+              className="text-xs"
+            >
+              {empresa.status_pagamento === "em_dia"
+                ? "Em dia"
+                : empresa.status_pagamento === "atrasado"
+                ? "Atrasado"
+                : "Cancelado"}
+            </Badge>
+          </div>
         </CardContent>
       </Card>
 

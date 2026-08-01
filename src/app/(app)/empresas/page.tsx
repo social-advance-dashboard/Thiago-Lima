@@ -7,7 +7,7 @@ export default async function EmpresasPage() {
   // Busca empresas
   const { data: empresas } = await supabase
     .from("empresas")
-    .select("id, nome, status, plano, segmento, logo_url, data_entrada")
+    .select("id, nome, status, plano, segmento, logo_url, data_entrada, status_pagamento")
     .order("nome", { ascending: true });
 
   const hoje = new Date();
@@ -54,6 +54,7 @@ export default async function EmpresasPage() {
 
   const empresasComDados = (empresas ?? []).map((e) => ({
     ...e,
+    status_pagamento: e.status_pagamento ?? "em_dia",
     engajamento: desempenhoPorEmpresa.get(e.id)?.engajamento ?? 0,
     gasto: desempenhoPorEmpresa.get(e.id)?.gasto ?? 0,
     integracoes: integracoesPorEmpresa.get(e.id) ?? [],

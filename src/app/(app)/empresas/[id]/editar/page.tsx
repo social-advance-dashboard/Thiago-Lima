@@ -15,7 +15,9 @@ export default async function EditarEmpresaPage({
 
   const { data: empresa } = await supabase
     .from("empresas")
-    .select("id, nome, status, plano, segmento, logo_url, data_entrada")
+    .select(
+      "id, nome, status, plano, segmento, logo_url, data_entrada, meta_engajamento, meta_gasto, status_pagamento, observacoes"
+    )
     .eq("id", id)
     .single();
 

@@ -32,6 +32,7 @@ export type EmpresaComDados = {
   segmento: string | null;
   logo_url: string | null;
   data_entrada: string | null;
+  status_pagamento: string;
   engajamento: number;
   gasto: number;
   integracoes: { provider: string; status: string }[];
@@ -201,6 +202,7 @@ export function EmpresasClient({ empresas }: { empresas: EmpresaComDados[] }) {
                 <TableHead>Nome</TableHead>
                 <TableHead>Segmento</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Pagamento</TableHead>
                 <TableHead>Plano</TableHead>
                 <TableHead className="text-right">Engajamento (mês)</TableHead>
               </TableRow>
@@ -223,6 +225,23 @@ export function EmpresasClient({ empresas }: { empresas: EmpresaComDados[] }) {
                       }
                     >
                       {empresa.status === "ativo" ? "Ativo" : "Inativo"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        empresa.status_pagamento === "em_dia"
+                          ? "default"
+                          : empresa.status_pagamento === "atrasado"
+                          ? "destructive"
+                          : "secondary"
+                      }
+                    >
+                      {empresa.status_pagamento === "em_dia"
+                        ? "Em dia"
+                        : empresa.status_pagamento === "atrasado"
+                        ? "Atrasado"
+                        : "Cancelado"}
                     </Badge>
                   </TableCell>
                   <TableCell className="capitalize">
