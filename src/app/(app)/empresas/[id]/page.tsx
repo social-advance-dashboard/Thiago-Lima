@@ -110,7 +110,7 @@ export default async function EmpresaDetalhesPage({
 
   const { data: integracoes } = await supabase
     .from("integracoes_ads")
-    .select("provider, status")
+    .select("id, provider, status, account_name, external_account_id, last_synced_at")
     .eq("empresa_id", id);
 
   const hoje = new Date();
