@@ -20,7 +20,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Search, ArrowUpDown, Filter } from "lucide-react";
+import { Search, ArrowUpDown, Filter, Plus } from "lucide-react";
 import Link from "next/link";
 import { EmpresaCard } from "./empresa-card";
 
@@ -87,6 +87,13 @@ export function EmpresasClient({ empresas }: { empresas: EmpresaComDados[] }) {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <Link href="/empresas/nova">
+            <Button>
+              <Plus size={14} />
+              Nova empresa
+            </Button>
+          </Link>
+
           <div className="relative">
             <Search
               size={16}
