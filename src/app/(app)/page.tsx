@@ -1,9 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, Calendar } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { TrendingUp, TrendingDown, Calendar, AlertTriangle } from "lucide-react";
 import { DesempenhoEvolucao } from "@/components/charts/desempenho-evolucao";
 import { construirSerieDiaria } from "@/lib/desempenho";
+import Link from "next/link";
 
 function formatMoeda(valor: number) {
   return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -63,6 +65,24 @@ export default async function DashboardPage() {
 
   const serieEvolucao = construirSerieDiaria(desempenhoEvolucao ?? [], 30);
 
+  // Notificações: empresas sem dados nos últimos 7 dias
+  const seteDiasAtras = new Date();
+  seteDiasAtras.setDate(seteDiasAtras.getDate() - 7);
+  const dataAlerta = seteDiasAtras.toISOString().split("T")[0];
+
+  const { data: todasEmpresas } = await supabase
+    .from("empresas")
+    .select("id, nome")
+    .eq("status", "ativo");
+
+  const { data: empresasComDados } = await supabase
+    .from("desempenho_diario")
+    .select("empresa_id")
+    .gte("data", dataAlerta);
+
+  const idsComDados = new Set((empresasComDados ?? []).map((d) => d.empresa_id));
+  const empresasSemDados = (todasEmpresas ?? []).filter((e) => !idsComDados.has(e.id));
+
   return (
     <div className="p-8 space-y-6">
       <div>
@@ -110,6 +130,29 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Notificações */}
+      {empresasSemDados.length > 0 && (
+        <Card className="border-yellow-500/40 bg-yellow-500/5">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm text-yellow-700 dark:text-yellow-400">
+              <AlertTriangle size={16} />
+              {empresasSemDados.length} empresa{empresasSemDados.length > 1 ? "s" : ""} sem dados nos últimos 7 dias
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {empresasSemDados.map((e) => (
+                <Link key={e.id} href={`/empresas/${e.id}/desempenho/novo`}>
+                  <Badge variant="outline" className="cursor-pointer hover:bg-accent">
+                    {e.nome}
+                  </Badge>
+                </Link>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <DesempenhoEvolucao serie={serieEvolucao} />
 

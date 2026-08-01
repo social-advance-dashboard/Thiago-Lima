@@ -20,7 +20,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Search, ArrowUpDown, Filter, Plus } from "lucide-react";
+import { Search, ArrowUpDown, Filter, Plus, Download } from "lucide-react";
 import Link from "next/link";
 import { EmpresaCard } from "./empresa-card";
 
@@ -50,6 +50,27 @@ const LABEL_ORDENACAO: Record<Ordenacao, string> = {
   nome: "Nome (A-Z)",
   engajamento: "Engajamento (maior primeiro)",
 };
+
+function exportarCSV(lista: EmpresaComDados[]) {
+  const cabecalho = ["Nome", "Segmento", "Plano", "Status", "Engajamento (mês)", "Gasto ads (mês)", "Data entrada"];
+  const linhas = lista.map((e) => [
+    e.nome,
+    e.segmento ?? "",
+    e.plano ?? "",
+    e.status,
+    e.engajamento,
+    e.gasto.toFixed(2),
+    e.data_entrada ?? "",
+  ]);
+  const csv = [cabecalho, ...linhas].map((row) => row.join(";")).join("\n");
+  const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `empresas_${new Date().toISOString().split("T")[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 export function EmpresasClient({ empresas }: { empresas: EmpresaComDados[] }) {
   const [busca, setBusca] = useState("");
@@ -87,6 +108,11 @@ export function EmpresasClient({ empresas }: { empresas: EmpresaComDados[] }) {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <Button variant="outline" onClick={() => exportarCSV(empresasFiltradas)}>
+            <Download size={14} />
+            Exportar CSV
+          </Button>
+
           <Link href="/empresas/nova">
             <Button>
               <Plus size={14} />

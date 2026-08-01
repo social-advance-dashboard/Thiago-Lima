@@ -94,10 +94,10 @@ export default async function EmpresaDetalhesPage({
               Editar
             </Button>
           </Link>
-          <Link href={`/empresas/${id}/desempenho/novo`}>
+          <Link href={`/empresas/${id}/desempenho`}>
             <Button variant="outline" size="sm">
               <TrendingUp size={14} />
-              Lançar desempenho
+              Desempenho
             </Button>
           </Link>
           <GerarRelatorioButton empresa={{ id: empresa.id, nome: empresa.nome }} />

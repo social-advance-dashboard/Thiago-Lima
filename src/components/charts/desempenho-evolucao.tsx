@@ -3,38 +3,72 @@
 import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { EvolucaoLineChart } from "@/components/charts/evolucao-line-chart";
 import type { LinhaDesempenho } from "@/lib/desempenho";
 import { formatMoeda, formatMoedaCompacta, formatNumero } from "@/lib/formatters";
 
-const PERIODOS = [
-  { dias: 7 as const, label: "7 dias" },
-  { dias: 30 as const, label: "30 dias" },
+type Periodo = 7 | 30 | 90 | "custom";
+
+const PERIODOS: { dias: Periodo; label: string }[] = [
+  { dias: 7, label: "7d" },
+  { dias: 30, label: "30d" },
+  { dias: 90, label: "90d" },
+  { dias: "custom", label: "Intervalo" },
 ];
 
 export function DesempenhoEvolucao({ serie }: { serie: LinhaDesempenho[] }) {
-  const [dias, setDias] = useState<7 | 30>(30);
+  const [periodo, setPeriodo] = useState<Periodo>(30);
+  const [dataInicio, setDataInicio] = useState("");
+  const [dataFim, setDataFim] = useState("");
 
-  const serieRecortada = useMemo(() => serie.slice(-dias), [serie, dias]);
+  const serieRecortada = useMemo(() => {
+    if (periodo === "custom") {
+      if (!dataInicio && !dataFim) return serie;
+      return serie.filter((p) => {
+        if (dataInicio && p.data < dataInicio) return false;
+        if (dataFim && p.data > dataFim) return false;
+        return true;
+      });
+    }
+    return serie.slice(-periodo);
+  }, [serie, periodo, dataInicio, dataFim]);
 
   const temEngajamento = serieRecortada.some((p) => p.engajamento > 0);
   const temGasto = serieRecortada.some((p) => p.gasto > 0);
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center gap-2 justify-between">
         <h2 className="text-lg font-medium">Evolução</h2>
-        <div className="flex gap-1">
-          {PERIODOS.map((periodo) => (
+        <div className="flex flex-wrap gap-1 items-center">
+          {PERIODOS.map((p) => (
             <Button
-              key={periodo.dias}
+              key={String(p.dias)}
               size="sm"
-              variant={dias === periodo.dias ? "default" : "outline"}
-              onClick={() => setDias(periodo.dias)}
+              variant={periodo === p.dias ? "default" : "outline"}
+              onClick={() => setPeriodo(p.dias)}
             >
-              {periodo.label}
+              {p.label}
             </Button>
           ))}
+          {periodo === "custom" && (
+            <div className="flex gap-1 items-center ml-1">
+              <Input
+                type="date"
+                value={dataInicio}
+                onChange={(e) => setDataInicio(e.target.value)}
+                className="h-8 w-36 text-xs"
+              />
+              <span className="text-muted-foreground text-xs">→</span>
+              <Input
+                type="date"
+                value={dataFim}
+                onChange={(e) => setDataFim(e.target.value)}
+                className="h-8 w-36 text-xs"
+              />
+            </div>
+          )}
         </div>
       </div>
 
@@ -53,7 +87,7 @@ export function DesempenhoEvolucao({ serie }: { serie: LinhaDesempenho[] }) {
               />
             ) : (
               <p className="py-16 text-center text-sm text-muted-foreground">
-                Sem dados de engajamento no período.
+                Sem dados no período.
               </p>
             )}
           </CardContent>
@@ -74,7 +108,7 @@ export function DesempenhoEvolucao({ serie }: { serie: LinhaDesempenho[] }) {
               />
             ) : (
               <p className="py-16 text-center text-sm text-muted-foreground">
-                Sem dados de gasto no período.
+                Sem dados no período.
               </p>
             )}
           </CardContent>

@@ -135,9 +135,15 @@ export default async function RelatorioPublicoPage({
 
         <div className="flex items-center justify-between print:hidden">
           <p className="text-xs text-muted-foreground">
-            Relatório gerado pela Social Advance
+            Relatório gerado pela{" "}
+            <span className="font-semibold text-[#378ADD]">Social Advance</span>
           </p>
           <BotaoPrint />
+        </div>
+
+        <div className="hidden print:flex items-center justify-center gap-2 pt-4 border-t">
+          <span className="text-sm font-semibold text-[#378ADD]">Social Advance</span>
+          <span className="text-xs text-muted-foreground">· Relatório de desempenho</span>
         </div>
       </div>
     </div>

@@ -114,6 +114,16 @@ export async function adicionarIntegracao(
   return { erro: "" };
 }
 
+export async function deletarDesempenho(
+  registroId: string,
+  empresaId: string
+): Promise<void> {
+  const supabase = await createClient();
+  await supabase.from("desempenho_diario").delete().eq("id", registroId);
+  revalidatePath(`/empresas/${empresaId}`);
+  revalidatePath(`/empresas/${empresaId}/desempenho`);
+}
+
 export async function removerIntegracao(
   empresaId: string,
   provider: string
