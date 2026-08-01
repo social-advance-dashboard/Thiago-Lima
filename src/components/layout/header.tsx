@@ -3,12 +3,12 @@
 import { useState, useEffect, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Search } from "lucide-react";
+import { Search, Menu } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 type Resultado = { id: string; nome: string; segmento: string | null };
 
-export function Header() {
+export function Header({ onMenuClick }: { onMenuClick: () => void }) {
   const [busca, setBusca] = useState("");
   const [resultados, setResultados] = useState<Resultado[]>([]);
   const [aberto, setAberto] = useState(false);
@@ -52,7 +52,13 @@ export function Header() {
   }
 
   return (
-    <header className="border-b h-12 flex items-center px-4 bg-background">
+    <header className="border-b h-12 flex items-center px-4 bg-background gap-3">
+      <button
+        className="md:hidden rounded-md p-1.5 hover:bg-accent shrink-0"
+        onClick={onMenuClick}
+      >
+        <Menu size={18} />
+      </button>
       <div className="relative w-full max-w-sm" ref={ref}>
         <Search
           size={15}
