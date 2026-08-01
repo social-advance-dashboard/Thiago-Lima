@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
 
   const supabase = createAdminClient();
 
-  await supabase.from("integracoes_ads").upsert(
+  const { error } = await supabase.from("integracoes_ads").upsert(
     {
       empresa_id: empresaId,
       provider: "google_analytics",
@@ -55,6 +55,12 @@ export async function GET(request: NextRequest) {
     },
     { onConflict: "empresa_id,provider" }
   );
+
+  if (error) {
+    return Response.redirect(
+      `${appUrl}/empresas/${empresaId}?erro_google=${encodeURIComponent(error.message)}`
+    );
+  }
 
   return Response.redirect(`${appUrl}/empresas/${empresaId}?google_conectado=1`);
 }
