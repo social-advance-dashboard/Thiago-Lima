@@ -1,6 +1,5 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 
@@ -23,7 +22,7 @@ export async function salvarPropertyId(
   provider: string,
   externalId: string
 ): Promise<{ erro: string }> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { error } = await supabase
     .from("integracoes_ads")
     .update({ external_account_id: externalId.trim() })
@@ -39,10 +38,9 @@ export async function salvarPropertyId(
 export async function sincronizarGoogle(
   empresaId: string
 ): Promise<{ erro: string; sincronizados?: number }> {
-  const supabase = await createClient();
   const admin = createAdminClient();
 
-  const { data: integracao } = await supabase
+  const { data: integracao } = await admin
     .from("integracoes_ads")
     .select("access_token, refresh_token, token_expires_at, external_account_id")
     .eq("empresa_id", empresaId)
@@ -135,10 +133,9 @@ export async function sincronizarGoogle(
 export async function sincronizarMeta(
   empresaId: string
 ): Promise<{ erro: string; sincronizados?: number }> {
-  const supabase = await createClient();
   const admin = createAdminClient();
 
-  const { data: integracao } = await supabase
+  const { data: integracao } = await admin
     .from("integracoes_ads")
     .select("access_token, external_account_id")
     .eq("empresa_id", empresaId)
@@ -204,7 +201,7 @@ export async function desconectarIntegracao(
   empresaId: string,
   provider: string
 ): Promise<void> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   await supabase
     .from("integracoes_ads")
     .delete()

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -97,6 +98,7 @@ export default async function EmpresaDetalhesPage({
 }) {
   const { id } = await params;
   const supabase = await createClient();
+  const admin = createAdminClient();
 
   const { data: empresa } = await supabase
     .from("empresas")
@@ -108,7 +110,7 @@ export default async function EmpresaDetalhesPage({
 
   if (!empresa) notFound();
 
-  const { data: integracoes } = await supabase
+  const { data: integracoes } = await admin
     .from("integracoes_ads")
     .select("id, provider, status, account_name, external_account_id, last_synced_at")
     .eq("empresa_id", id);

@@ -13,7 +13,6 @@ export async function GET(request: NextRequest) {
 
   const redirectUri = `${appUrl}/api/integracoes/google/callback`;
 
-  // Troca o code pelo access_token + refresh_token
   const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -28,14 +27,18 @@ export async function GET(request: NextRequest) {
 
   const tokens = await tokenRes.json();
   if (!tokens.access_token) {
-    return Response.redirect(`${appUrl}/empresas/${empresaId}?erro=google_token_falhou`);
+    return Response.redirect(
+      `${appUrl}/empresas/${empresaId}?erro_google=${encodeURIComponent(
+        tokens.error_description ?? tokens.error ?? "token_falhou"
+      )}`
+    );
   }
 
-  // Busca email da conta conectada
   const userRes = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
     headers: { Authorization: `Bearer ${tokens.access_token}` },
   });
   const userInfo = await userRes.json();
+  const accountName = userInfo.email ?? userInfo.name ?? "Google Analytics";
 
   const expiresAt = tokens.expires_in
     ? new Date(Date.now() + tokens.expires_in * 1000).toISOString()
@@ -43,22 +46,44 @@ export async function GET(request: NextRequest) {
 
   const supabase = createAdminClient();
 
-  const { error } = await supabase.from("integracoes_ads").upsert(
-    {
+  // Verifica se já existe integração para esta empresa+provider
+  const { data: existing } = await supabase
+    .from("integracoes_ads")
+    .select("id")
+    .eq("empresa_id", empresaId)
+    .eq("provider", "google_analytics")
+    .maybeSingle();
+
+  let saveError: string | null = null;
+
+  if (existing) {
+    const { error } = await supabase
+      .from("integracoes_ads")
+      .update({
+        status: "ativo",
+        access_token: tokens.access_token,
+        refresh_token: tokens.refresh_token ?? null,
+        token_expires_at: expiresAt,
+        account_name: accountName,
+      })
+      .eq("id", existing.id);
+    if (error) saveError = error.message;
+  } else {
+    const { error } = await supabase.from("integracoes_ads").insert({
       empresa_id: empresaId,
       provider: "google_analytics",
       status: "ativo",
       access_token: tokens.access_token,
       refresh_token: tokens.refresh_token ?? null,
       token_expires_at: expiresAt,
-      account_name: userInfo.email ?? null,
-    },
-    { onConflict: "empresa_id,provider" }
-  );
+      account_name: accountName,
+    });
+    if (error) saveError = error.message;
+  }
 
-  if (error) {
+  if (saveError) {
     return Response.redirect(
-      `${appUrl}/empresas/${empresaId}?erro_google=${encodeURIComponent(error.message)}`
+      `${appUrl}/empresas/${empresaId}?erro_google=${encodeURIComponent(saveError)}`
     );
   }
 
