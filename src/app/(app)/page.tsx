@@ -2,14 +2,11 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, TrendingDown, Calendar, AlertTriangle } from "lucide-react";
+import { TrendingUp, TrendingDown, Calendar, AlertTriangle, Target } from "lucide-react";
 import { DesempenhoEvolucao } from "@/components/charts/desempenho-evolucao";
 import { construirSerieDiaria } from "@/lib/desempenho";
+import { formatNumero, formatMoeda } from "@/lib/formatters";
 import Link from "next/link";
-
-function formatMoeda(valor: number) {
-  return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -83,6 +80,27 @@ export default async function DashboardPage() {
   const idsComDados = new Set((empresasComDados ?? []).map((d) => d.empresa_id));
   const empresasSemDados = (todasEmpresas ?? []).filter((e) => !idsComDados.has(e.id));
 
+  // Metas do mês — empresas com meta definida
+  const { data: empresasComMeta } = await supabase
+    .from("empresas")
+    .select("id, nome, meta_engajamento, meta_gasto")
+    .eq("status", "ativo")
+    .or("meta_engajamento.gt.0,meta_gasto.gt.0");
+
+  const { data: desempenhoMetas } = await supabase
+    .from("desempenho_diario")
+    .select("empresa_id, engajamento, gasto_ads")
+    .gte("data", inicioMes);
+
+  const metasPorEmpresa = new Map<string, { engajamento: number; gasto: number }>();
+  (desempenhoMetas ?? []).forEach((d) => {
+    const atual = metasPorEmpresa.get(d.empresa_id) ?? { engajamento: 0, gasto: 0 };
+    metasPorEmpresa.set(d.empresa_id, {
+      engajamento: atual.engajamento + (d.engajamento ?? 0),
+      gasto: atual.gasto + Number(d.gasto_ads ?? 0),
+    });
+  });
+
   return (
     <div className="p-8 space-y-6">
       <div>
@@ -150,6 +168,70 @@ export default async function DashboardPage() {
                 </Link>
               ))}
             </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Metas do mês */}
+      {empresasComMeta && empresasComMeta.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Target size={16} />
+              Metas do mês
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="divide-y">
+              {empresasComMeta.map((e) => {
+                const atual = metasPorEmpresa.get(e.id) ?? { engajamento: 0, gasto: 0 };
+                const pctEng = e.meta_engajamento > 0
+                  ? Math.min(100, Math.round((atual.engajamento / e.meta_engajamento) * 100))
+                  : null;
+                const pctGasto = e.meta_gasto > 0
+                  ? Math.min(100, Math.round((atual.gasto / Number(e.meta_gasto)) * 100))
+                  : null;
+
+                return (
+                  <li key={e.id} className="py-3 space-y-2">
+                    <Link
+                      href={`/empresas/${e.id}`}
+                      className="text-sm font-medium hover:underline"
+                    >
+                      {e.nome}
+                    </Link>
+                    {pctEng !== null && (
+                      <div className="space-y-0.5">
+                        <div className="flex justify-between text-xs text-muted-foreground">
+                          <span>Engajamento — {formatNumero(atual.engajamento)} / {formatNumero(e.meta_engajamento)}</span>
+                          <span>{pctEng}%</span>
+                        </div>
+                        <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                          <div
+                            className={`h-full rounded-full ${pctEng >= 100 ? "bg-green-500" : pctEng >= 70 ? "bg-blue-500" : pctEng >= 40 ? "bg-yellow-500" : "bg-red-500"}`}
+                            style={{ width: `${pctEng}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                    {pctGasto !== null && (
+                      <div className="space-y-0.5">
+                        <div className="flex justify-between text-xs text-muted-foreground">
+                          <span>Gasto em ads — {formatMoeda(atual.gasto)} / {formatMoeda(Number(e.meta_gasto))}</span>
+                          <span>{pctGasto}%</span>
+                        </div>
+                        <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                          <div
+                            className={`h-full rounded-full ${pctGasto >= 100 ? "bg-green-500" : pctGasto >= 70 ? "bg-blue-500" : pctGasto >= 40 ? "bg-yellow-500" : "bg-red-500"}`}
+                            style={{ width: `${pctGasto}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
           </CardContent>
         </Card>
       )}

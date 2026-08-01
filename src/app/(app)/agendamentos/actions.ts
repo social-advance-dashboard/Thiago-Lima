@@ -38,6 +38,33 @@ export async function atualizarStatusAgendamento(
   revalidatePath("/agendamentos");
 }
 
+export async function editarAgendamento(
+  id: string,
+  _estado: { erro: string },
+  formData: FormData
+): Promise<{ erro: string }> {
+  const supabase = await createClient();
+
+  const titulo = (formData.get("titulo") as string)?.trim();
+  if (!titulo) return { erro: "O título é obrigatório." };
+
+  const tipo = (formData.get("tipo") as string) || "reuniao";
+  const data_hora = formData.get("data_hora") as string;
+  if (!data_hora) return { erro: "A data e hora são obrigatórias." };
+
+  const descricao = (formData.get("descricao") as string)?.trim() || null;
+
+  const { error } = await supabase
+    .from("agendamentos")
+    .update({ titulo, tipo, data_hora, descricao })
+    .eq("id", id);
+
+  if (error) return { erro: error.message };
+
+  revalidatePath("/agendamentos");
+  redirect("/agendamentos");
+}
+
 export async function deletarAgendamento(id: string): Promise<void> {
   const supabase = await createClient();
   await supabase.from("agendamentos").delete().eq("id", id);

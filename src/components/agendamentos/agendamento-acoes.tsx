@@ -1,7 +1,8 @@
 "use client";
 
 import { useTransition } from "react";
-import { CheckCircle, XCircle, Trash2 } from "lucide-react";
+import { CheckCircle, XCircle, Trash2, Pencil } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   atualizarStatusAgendamento,
@@ -32,6 +33,17 @@ export function AgendamentoAcoes({
 
   return (
     <div className="flex items-center gap-1">
+      <Link href={`/agendamentos/${id}/editar`}>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          className="text-muted-foreground hover:text-foreground"
+          title="Editar"
+        >
+          <Pencil size={13} />
+        </Button>
+      </Link>
+
       {status === "pendente" && (
         <>
           <Button
@@ -56,6 +68,7 @@ export function AgendamentoAcoes({
           </Button>
         </>
       )}
+
       <Button
         variant="ghost"
         size="icon-sm"
