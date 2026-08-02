@@ -28,6 +28,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Social Advance",
   description: "Dashboard da Social Advance",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Social Advance",
+  },
 };
 
 export default function RootLayout({
@@ -46,6 +52,19 @@ export default function RootLayout({
           id="tema-automatico"
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{ __html: SCRIPT_TEMA_INICIAL }}
+        />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="Social Advance" />
+        <meta name="theme-color" content="#1a1a2e" />
+        <link rel="apple-touch-icon" href="/icons/icon.svg" />
+        <Script
+          id="register-sw"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }`,
+          }}
         />
       </head>
       <body className="min-h-screen flex flex-col">
