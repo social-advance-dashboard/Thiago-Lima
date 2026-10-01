@@ -27,7 +27,9 @@ export async function criarLancamento(
   if (error) return { erro: error.message };
 
   revalidatePath("/financeiro");
-  redirect("/financeiro");
+  // Redireciona para o mês do lançamento, não o mês atual
+  const mes = data.slice(0, 7); // "YYYY-MM"
+  redirect(`/financeiro?mes=${mes}`);
 }
 
 export async function deletarLancamento(id: string): Promise<void> {
