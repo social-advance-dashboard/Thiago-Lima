@@ -40,10 +40,11 @@ export function NovaTarefaForm({ empresas }: { empresas: Empresa[] }) {
         <select
           id="prioridade"
           name="prioridade"
+          defaultValue="media"
           className="w-full h-9 rounded-md border border-input bg-background px-3 py-1 text-sm"
         >
           <option value="baixa">Baixa</option>
-          <option value="media" selected>Média</option>
+          <option value="media">Média</option>
           <option value="alta">Alta</option>
         </select>
       </div>
