@@ -11,17 +11,18 @@ export async function criarLancamento(
   const supabase = await createClient();
 
   const tipo = formData.get("tipo") as string;
+  const categoria = formData.get("categoria") as string;
   const valor = Number(formData.get("valor"));
   const data = formData.get("data") as string;
   const descricao = (formData.get("descricao") as string)?.trim() || null;
 
-  if (!tipo || !valor || !data) {
-    return { erro: "Tipo, valor e data são obrigatórios." };
+  if (!tipo || !categoria || !valor || !data) {
+    return { erro: "Tipo, categoria, valor e data são obrigatórios." };
   }
 
   const { error } = await supabase
     .from("financeiro_agencia")
-    .insert({ tipo, valor, data, descricao });
+    .insert({ tipo, categoria, valor, data, descricao });
 
   if (error) return { erro: error.message };
 

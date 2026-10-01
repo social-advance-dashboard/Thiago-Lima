@@ -46,6 +46,22 @@ export function NovoLancamentoForm() {
         </select>
       </Campo>
 
+      <Campo label="Categoria" required>
+        <select
+          name="categoria"
+          defaultValue="mensalidade"
+          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
+        >
+          <option value="mensalidade">Mensalidade</option>
+          <option value="servico">Serviço avulso</option>
+          <option value="ferramenta">Ferramenta / Software</option>
+          <option value="salario">Salário / Freelancer</option>
+          <option value="imposto">Imposto / Tarifa</option>
+          <option value="marketing">Marketing / Ads</option>
+          <option value="outros">Outros</option>
+        </select>
+      </Campo>
+
       <Campo label="Descrição">
         <Input
           name="descricao"
