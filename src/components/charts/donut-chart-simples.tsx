@@ -33,9 +33,10 @@ export function DonutChartSimples({ dados, height = 220 }: { dados: Fatia[]; hei
           ))}
         </Pie>
         <Tooltip
-          formatter={(value: number) => [
-            `${value} (${total > 0 ? Math.round((value / total) * 100) : 0}%)`,
-          ]}
+          formatter={(value) => {
+            const v = Number(value ?? 0);
+            return [`${v} (${total > 0 ? Math.round((v / total) * 100) : 0}%)`];
+          }}
           contentStyle={{
             background: "var(--popover)",
             border: "1px solid var(--border)",
