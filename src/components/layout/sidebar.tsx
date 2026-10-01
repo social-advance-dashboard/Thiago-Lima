@@ -13,6 +13,11 @@ import {
   DollarSign,
   CalendarDays,
   X,
+  CreditCard,
+  CheckSquare,
+  TrendingUp,
+  CalendarClock,
+  Users,
 } from "lucide-react";
 import {
   Tooltip,
@@ -25,9 +30,14 @@ const navItems = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
   { label: "Empresas", href: "/empresas", icon: Building2 },
   { label: "Ranking", href: "/ranking", icon: Trophy },
-  { label: "Financeiro", href: "/financeiro", icon: DollarSign },
+  { label: "Pipeline", href: "/pipeline", icon: TrendingUp },
+  { label: "Tarefas", href: "/tarefas", icon: CheckSquare },
+  { label: "Calendário", href: "/calendario", icon: CalendarClock },
   { label: "Agendamentos", href: "/agendamentos", icon: CalendarDays },
+  { label: "Mensalidades", href: "/mensalidades", icon: CreditCard },
+  { label: "Financeiro", href: "/financeiro", icon: DollarSign },
   { label: "Relatórios", href: "/relatorios", icon: FileText },
+  { label: "Equipe", href: "/equipe", icon: Users },
   { label: "Configurações", href: "/configuracoes", icon: Settings },
 ];
 
