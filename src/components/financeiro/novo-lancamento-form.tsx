@@ -4,6 +4,14 @@ import { useActionState } from "react";
 import { criarLancamento } from "@/app/(app)/financeiro/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useRef } from "react";
 
 const estadoInicial = { erro: "" };
 
@@ -33,33 +41,48 @@ export function NovoLancamentoForm() {
     estadoInicial
   );
 
+  const tipoRef = useRef<HTMLInputElement>(null);
+  const categoriaRef = useRef<HTMLInputElement>(null);
+
   return (
     <form action={action} className="space-y-5">
+      {/* hidden inputs para o server action receber os valores */}
+      <input ref={tipoRef} type="hidden" name="tipo" defaultValue="receita" />
+      <input ref={categoriaRef} type="hidden" name="categoria" defaultValue="mensalidade" />
+
       <Campo label="Tipo" required>
-        <select
-          name="tipo"
+        <Select
           defaultValue="receita"
-          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
+          onValueChange={(v) => { if (tipoRef.current) tipoRef.current.value = v; }}
         >
-          <option value="receita">Receita</option>
-          <option value="despesa">Despesa</option>
-        </select>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="receita">Receita</SelectItem>
+            <SelectItem value="despesa">Despesa</SelectItem>
+          </SelectContent>
+        </Select>
       </Campo>
 
       <Campo label="Categoria" required>
-        <select
-          name="categoria"
+        <Select
           defaultValue="mensalidade"
-          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
+          onValueChange={(v) => { if (categoriaRef.current) categoriaRef.current.value = v; }}
         >
-          <option value="mensalidade">Mensalidade</option>
-          <option value="servico">Serviço avulso</option>
-          <option value="ferramenta">Ferramenta / Software</option>
-          <option value="salario">Salário / Freelancer</option>
-          <option value="imposto">Imposto / Tarifa</option>
-          <option value="marketing">Marketing / Ads</option>
-          <option value="outros">Outros</option>
-        </select>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="mensalidade">Mensalidade</SelectItem>
+            <SelectItem value="servico">Serviço avulso</SelectItem>
+            <SelectItem value="ferramenta">Ferramenta / Software</SelectItem>
+            <SelectItem value="salario">Salário / Freelancer</SelectItem>
+            <SelectItem value="imposto">Imposto / Tarifa</SelectItem>
+            <SelectItem value="marketing">Marketing / Ads</SelectItem>
+            <SelectItem value="outros">Outros</SelectItem>
+          </SelectContent>
+        </Select>
       </Campo>
 
       <Campo label="Descrição">
