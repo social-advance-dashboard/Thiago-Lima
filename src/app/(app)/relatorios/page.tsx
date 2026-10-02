@@ -4,6 +4,7 @@ import { formatMoeda } from "@/lib/formatters";
 import { BarChartSimples } from "@/components/charts/bar-chart-simples";
 import { DonutChartSimples } from "@/components/charts/donut-chart-simples";
 
+
 const CORES_STATUS_TAREFA: Record<string, string> = {
   pendente: "#f59e0b",
   em_andamento: "#3b82f6",
@@ -206,7 +207,7 @@ export default async function RelatoriosPage() {
               <CardTitle className="text-sm">Receitas por mês</CardTitle>
             </CardHeader>
             <CardContent>
-              <BarChartSimples dados={dadosReceita} cor="#22c55e" formatter={formatMoeda} />
+              <BarChartSimples dados={dadosReceita} cor="#22c55e" formatAsMoeda />
             </CardContent>
           </Card>
           <Card>
@@ -214,7 +215,7 @@ export default async function RelatoriosPage() {
               <CardTitle className="text-sm">Despesas por mês</CardTitle>
             </CardHeader>
             <CardContent>
-              <BarChartSimples dados={dadosDespesa} cor="#ef4444" formatter={formatMoeda} />
+              <BarChartSimples dados={dadosDespesa} cor="#ef4444" formatAsMoeda />
             </CardContent>
           </Card>
           <Card>
@@ -222,7 +223,7 @@ export default async function RelatoriosPage() {
               <CardTitle className="text-sm">Lucro por mês</CardTitle>
             </CardHeader>
             <CardContent>
-              <BarChartSimples dados={dadosLucro} formatter={formatMoeda} />
+              <BarChartSimples dados={dadosLucro} formatAsMoeda />
             </CardContent>
           </Card>
         </div>
