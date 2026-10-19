@@ -1,10 +1,18 @@
 import { createClient } from "@/lib/supabase/server";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { TrocarSenhaForm } from "@/components/configuracoes/trocar-senha-form";
+import { CriarUsuarioEmpresaForm } from "@/components/configuracoes/criar-usuario-empresa-form";
+import { Building2 } from "lucide-react";
 
 export default async function ConfiguracoesPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+
+  const { data: empresas } = await supabase
+    .from("empresas")
+    .select("id, nome")
+    .eq("status", "ativo")
+    .order("nome");
 
   return (
     <div className="p-8 max-w-2xl space-y-6">
@@ -46,14 +54,19 @@ export default async function ConfiguracoesPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Adicionar novo usuário admin</CardTitle>
+          <div className="flex items-center gap-2">
+            <Building2 size={16} className="text-muted-foreground" />
+            <CardTitle className="text-base">Portal das empresas</CardTitle>
+          </div>
+          <CardDescription>
+            Crie um login para cada empresa cliente. Elas acessam{" "}
+            <strong>sa-dashboard.store/login</strong> com o email e senha que
+            você definir aqui, e são direcionadas automaticamente para o portal
+            delas com o próprio financeiro.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Para criar novos usuários com acesso ao dashboard, vá em{" "}
-            <strong>Supabase → Authentication → Users → Invite user</strong>{" "}
-            e insira o email do novo membro.
-          </p>
+          <CriarUsuarioEmpresaForm empresas={empresas ?? []} />
         </CardContent>
       </Card>
     </div>

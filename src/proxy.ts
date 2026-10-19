@@ -29,14 +29,28 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const { pathname } = request.nextUrl;
+
   const rotaPublica =
-    request.nextUrl.pathname.startsWith("/login") ||
-    request.nextUrl.pathname.startsWith("/relatorios");
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/relatorios");
 
   if (!user && !rotaPublica) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
+  }
+
+  // Usuários de empresa: redireciona para o portal se tentar acessar rotas da agência
+  if (user) {
+    const isEmpresaUser = user.app_metadata?.role === "empresa";
+    const isPortalRoute = pathname.startsWith("/portal");
+
+    if (isEmpresaUser && !isPortalRoute && !rotaPublica) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/portal/financeiro";
+      return NextResponse.redirect(url);
+    }
   }
 
   return supabaseResponse;
