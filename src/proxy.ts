@@ -42,12 +42,14 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Usuários de empresa: redireciona para o portal se tentar acessar rotas da agência
+  // Usuários de empresa: redireciona para o portal em QUALQUER rota fora de /portal
+  // (inclui /relatorios e outras rotas "públicas" que expõem dados da agência)
   if (user) {
     const isEmpresaUser = user.app_metadata?.role === "empresa";
     const isPortalRoute = pathname.startsWith("/portal");
+    const isAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/auth");
 
-    if (isEmpresaUser && !isPortalRoute && !rotaPublica) {
+    if (isEmpresaUser && !isPortalRoute && !isAuthRoute) {
       const url = request.nextUrl.clone();
       url.pathname = "/portal/financeiro";
       return NextResponse.redirect(url);
