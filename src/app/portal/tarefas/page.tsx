@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { formatData } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
+import { NovaTarefaForm } from "@/components/portal/nova-tarefa-form";
 
 const COLUNAS = [
   { key: "pendente", label: "Pendente" },
@@ -30,11 +31,14 @@ export default async function PortalTarefasPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-semibold">Tarefas</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Acompanhe o andamento dos seus projetos
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold">Tarefas</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Acompanhe o andamento dos seus projetos
+          </p>
+        </div>
+        <NovaTarefaForm />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 overflow-x-auto">

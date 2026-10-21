@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { NovoPostForm } from "@/components/portal/novo-post-form";
 
 const REDE_LABEL: Record<string, string> = {
   instagram: "Instagram",
@@ -68,11 +69,14 @@ export default async function PortalCalendarioPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Calendário Editorial</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Conteúdos planejados para seus perfis
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold">Calendário Editorial</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Conteúdos planejados para seus perfis
+          </p>
+        </div>
+        <NovoPostForm />
       </div>
 
       {porMes.size === 0 && (
