@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { TrocarSenhaForm } from "@/components/configuracoes/trocar-senha-form";
 import { CriarUsuarioEmpresaForm } from "@/components/configuracoes/criar-usuario-empresa-form";
+import { RedefinirAcessoEmpresaForm } from "@/components/configuracoes/redefinir-acesso-empresa-form";
 import { Building2 } from "lucide-react";
 
 export default async function ConfiguracoesPage() {
@@ -67,6 +68,21 @@ export default async function ConfiguracoesPage() {
         </CardHeader>
         <CardContent>
           <CriarUsuarioEmpresaForm empresas={empresas ?? []} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Building2 size={16} className="text-muted-foreground" />
+            <CardTitle className="text-base">Redefinir acesso de empresa</CardTitle>
+          </div>
+          <CardDescription>
+            Caso uma empresa não consiga fazer login, atualize a senha dela aqui.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <RedefinirAcessoEmpresaForm />
         </CardContent>
       </Card>
     </div>
