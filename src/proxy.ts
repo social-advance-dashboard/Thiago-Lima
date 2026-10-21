@@ -33,7 +33,8 @@ export async function proxy(request: NextRequest) {
 
   const rotaPublica =
     pathname.startsWith("/login") ||
-    pathname.startsWith("/relatorios");
+    pathname.startsWith("/relatorios") ||
+    pathname.startsWith("/auth");
 
   if (!user && !rotaPublica) {
     const url = request.nextUrl.clone();
