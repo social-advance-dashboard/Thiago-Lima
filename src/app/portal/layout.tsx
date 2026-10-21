@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { LogoutPortalButton } from "@/components/portal/logout-portal-button";
+import { PortalNav } from "@/components/portal/portal-nav";
 
 export default async function PortalLayout({
   children,
@@ -26,6 +27,7 @@ export default async function PortalLayout({
         </div>
         <LogoutPortalButton />
       </header>
+      <PortalNav />
       <main className="max-w-4xl mx-auto p-6">{children}</main>
     </div>
   );
