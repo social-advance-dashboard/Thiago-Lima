@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { DollarSign, CheckSquare, Calendar, BarChart2, Trophy } from "lucide-react";
+import { DollarSign, CheckSquare, Calendar, BarChart2, Trophy, User } from "lucide-react";
 
 const NAV = [
   { href: "/portal/financeiro", label: "Financeiro", icon: DollarSign },
@@ -11,6 +11,7 @@ const NAV = [
   { href: "/portal/calendario", label: "Calendário", icon: Calendar },
   { href: "/portal/relatorios", label: "Relatórios", icon: BarChart2 },
   { href: "/portal/ranking", label: "Ranking", icon: Trophy },
+  { href: "/portal/perfil", label: "Perfil", icon: User },
 ];
 
 export function PortalNav() {
