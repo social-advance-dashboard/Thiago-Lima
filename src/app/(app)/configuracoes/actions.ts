@@ -9,9 +9,10 @@ export async function criarUsuarioEmpresa(
   const email = formData.get("email") as string;
   const senha = formData.get("senha") as string;
   const empresaId = formData.get("empresa_id") as string;
+  const nome = (formData.get("nome") as string)?.trim();
 
-  if (!email || !senha || !empresaId) {
-    return { erro: "Email, senha e empresa são obrigatórios.", sucesso: false };
+  if (!email || !senha || !empresaId || !nome) {
+    return { erro: "Nome, email, senha e empresa são obrigatórios.", sucesso: false };
   }
 
   if (senha.length < 6) {
@@ -39,6 +40,7 @@ export async function criarUsuarioEmpresa(
         role: "empresa",
         empresa_id: empresaId,
         empresa_nome: empresa.nome,
+        usuario_nome: nome,
       },
     });
 

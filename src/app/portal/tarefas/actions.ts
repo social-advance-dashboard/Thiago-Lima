@@ -21,6 +21,8 @@ export async function criarTarefaPortal(
 
   if (!titulo) return { erro: "Título é obrigatório.", sucesso: false };
 
+  const usuarioNome = user?.app_metadata?.usuario_nome as string | undefined;
+
   const admin = createAdminClient();
   const { error } = await admin.from("tarefas").insert({
     titulo,
@@ -29,6 +31,7 @@ export async function criarTarefaPortal(
     data_prazo: data_prazo || null,
     empresa_id: empresaId,
     status: "pendente",
+    responsavel: usuarioNome ?? null,
   });
 
   if (error) return { erro: error.message, sucesso: false };

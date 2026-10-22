@@ -57,6 +57,18 @@ export function CriarUsuarioEmpresaForm({
 
       <div className="space-y-1.5">
         <label className="text-sm font-medium">
+          Nome do usuário <span className="text-destructive">*</span>
+        </label>
+        <Input
+          name="nome"
+          type="text"
+          placeholder="Ex: João Silva"
+          required
+        />
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-sm font-medium">
           Email de acesso <span className="text-destructive">*</span>
         </label>
         <Input
